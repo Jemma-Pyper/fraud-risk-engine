@@ -1,0 +1,2 @@
+step,type,amount,nameOrig,oldbalanceOrg,newbalanceOrig,nameDest,oldbalanceDest,newbalanceDest,isFraud,isFlaggedFraud
+1,TRANSFER,1000.00,C12345,1000.00,0.00,C54321,0.00,1000.00,0,0
