@@ -19,3 +19,6 @@ Run lint and tests:
 ruff check src tests
 pytest
 ```
+
+## Phase 1: Data ingestion and validation
+This phase adds safe PaySim data loading and schema validation, including checks for required columns, numeric values, fraud labels restricted to 0 or 1, and warnings for zero-amount transactions. It also documents the dataset expectations and separates fatal errors from non-fatal data-quality warnings.

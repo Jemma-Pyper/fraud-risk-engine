@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = []
+dependencies = ["pandas>=2.0.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0.0", "ruff>=0.0.280"]
@@ -32,4 +32,6 @@ where = ["src"]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "B", "C", "Q"]
