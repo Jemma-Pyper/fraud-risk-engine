@@ -22,3 +22,14 @@ pytest
 
 ## Phase 1: Data ingestion and validation
 This phase adds safe PaySim data loading and schema validation, including checks for required columns, numeric values, fraud labels restricted to 0 or 1, and warnings for zero-amount transactions. It also documents the dataset expectations and separates fatal errors from non-fatal data-quality warnings.
+
+## Phase 2: Exploratory data analysis
+This phase adds reusable exploratory-analysis functions for dataset structure, fraud prevalence, fraud by transaction type, transaction amounts, balances, identifiers, and the existing `isFlaggedFraud` benchmark. Figures are saved under `reports/eda/figures/`.
+
+Run EDA against an explicitly supplied PaySim CSV:
+
+```bash
+python scripts/run_eda.py data/raw/paysim_transactions.csv
+```
+
+No modelling, feature engineering, resampling, or train/test splitting occurs during Phase 2. The raw PaySim dataset is not committed to this repository.

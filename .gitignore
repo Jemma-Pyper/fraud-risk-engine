@@ -31,6 +31,7 @@ Thumbs.db
 # Data storage
 data/raw/
 data/processed/
+data/*.csv
 
 # Editor settings
 .vscode/

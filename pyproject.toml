@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = ["pandas>=2.0.0"]
+dependencies = ["matplotlib>=3.7.0", "numpy>=1.26.0", "pandas>=2.0.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0.0", "ruff>=0.0.280"]
