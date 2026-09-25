@@ -35,3 +35,13 @@ The feature matrix contains exactly these columns, in this order:
 11. `type_TRANSFER`
 
 When `oldbalanceOrg` is zero, `amount_to_origin_balance` is explicitly set to `0.0`; `origin_zero_balance` preserves the information that the denominator was zero. No scaling, imputation, fitting, historical aggregation, or model-specific preprocessing occurs in this phase.
+
+## Phase 4 chronology
+
+The raw `step` field is used as the available chronological ordering variable only. It is not included in `X`, and its interpretation as an hourly index remains unverified. Phase 4 uses whole-step boundaries:
+
+- Train: steps `1-446`
+- Validation: steps `447-594`
+- Test: steps `595-743`
+
+Transactions sharing a step remain in one partition because the current schema does not provide reliable ordering within a step. Future historical features may use information from strictly earlier steps, but must not treat another transaction from the same step as known prior history. The test partition must remain untouched while models and settings are selected in Phase 5.

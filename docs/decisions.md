@@ -26,3 +26,12 @@
 - Fixed the baseline feature order to amount, `log1p_amount`, origin balance features, and five transaction-type indicators.
 - Treat `amount / oldbalanceOrg` as `0.0` when the origin balance is zero, with a separate `origin_zero_balance` indicator preserving that state.
 - Deferred historical identifier aggregates until a temporally safe pipeline exists that uses only transactions strictly before the scored transaction.
+
+## 2026-09-25: Phase 4 chronological split
+- Use whole-step partitions: train `1-446`, validation `447-594`, and test `595-743`.
+- Reject random splitting because the model is intended to simulate scoring future transactions and the observed fraud prevalence changes over time.
+- Prefer chronological step proportions over row-balanced 70/15/15 because transaction volume varies strongly by step; the selected split is approximately 60/20/20 by chronological step sequence.
+- Keep every shared-step group together because the schema does not provide reliable ordering within a step.
+- Keep `step` out of the predictor matrix; use it only for chronological partitioning until its hourly meaning is verified.
+- Keep the test partition untouched during Phase 5 model selection.
+- Permit future historical features to use only transactions from strictly earlier steps, never other transactions from the same step.

@@ -36,3 +36,8 @@ No modelling, feature engineering, resampling, or train/test splitting occurs du
 
 ## Phase 3: Leakage-aware baseline feature engineering
 Phase 3 creates a deliberately conservative feature matrix with exactly 11 inspectable features: transaction amount, a log-transformed amount, origin balance relationships, and fixed transaction-type indicators. The target `isFraud`, benchmark `isFlaggedFraud`, raw identifiers, both post-transaction balances, destination balance data, and `step` are excluded from the baseline matrix. `step` is retained in raw data for future chronological splitting after its time semantics are verified.
+
+## Phase 4: Chronological data splitting
+Phase 4 prepares chronological modelling datasets using whole PaySim `step` values. The fixed partitions are train steps `1-446`, validation steps `447-594`, and test steps `595-743`. This preserves temporal ordering and avoids splitting transactions from the same step across partitions. `step` is used for chronology only and remains excluded from the Phase 3 feature matrix.
+
+The observed fraud rate rises across later periods, so this temporal distribution shift is documented rather than hidden with a random split. The test partition must remain untouched during Phase 5 model selection. Historical account features, if added later, must use only steps strictly earlier than the transaction being scored.
