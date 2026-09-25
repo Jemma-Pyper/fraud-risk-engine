@@ -4,16 +4,34 @@ This table documents the expected PaySim fields, when they are available, whethe
 
 | Feature | When available | Used for model? | Leakage risk | Reason |
 |---|---|---|---|---|
-| `step` | At transaction time | Yes | Low | Represents transaction order/time window used for splits and model context. |
-| `type` | At transaction time | Yes | Low | Transaction category is a natural signal for fraud patterns. |
+| `step` | At transaction time | No in Phase 3 baseline | Low to medium | Retained for future chronological splitting; exact PaySim time semantics are not yet verified. |
+| `type` | At transaction time | Yes | Low | Transaction category is a natural signal for fraud patterns and is encoded in a fixed order. |
 | `amount` | At transaction time | Yes | Low | Transaction amount is a core fraud-risk feature. |
 | `nameOrig` | At transaction time | No | Medium | Identifier-level data can leak customer identities and is unsuitable as a raw feature. |
-| `oldbalanceOrg` | At transaction time | Yes | Medium | Origin balance before the transaction is available and useful, but should be handled carefully. |
-| `newbalanceOrig` | After transaction | No | High | Post-transaction balance may leak the transaction outcome. |
-| `nameDest` | At transaction time | No | High | Counterparty identifier is sensitive and not used directly in the model. |
-| `oldbalanceDest` | At transaction time | Yes | Medium | Destination opening balance is available before the transaction and may help detect anomalies. |
-| `newbalanceDest` | After transaction | No | High | Post-transaction balance can leak target behavior. |
+| `oldbalanceOrg` | At transaction time | Yes | Medium | Origin balance before the transaction is used for conservative origin-side relationships. |
+| `newbalanceOrig` | After transaction | No | High | Post-transaction balance may leak the transaction outcome. Any derived feature using it is also excluded. |
+| `nameDest` | At transaction time | No | High | Counterparty identifier is sensitive and not used directly in the model; historical features are deferred. |
+| `oldbalanceDest` | Availability not established for external recipients | No in Phase 3 baseline | Medium to high | Destination balance information and derived features are deferred until decision-time availability is justified. |
+| `newbalanceDest` | After transaction | No | High | Post-transaction balance can leak target behavior; any derived feature using it is also excluded. |
 | `isFraud` | After transaction | Target only | N/A | This is the label used for supervised training; not a feature. |
 | `isFlaggedFraud` | After transaction | Benchmark only | N/A | Used as an existing rule-based comparison baseline, not a model feature. |
 
 > Note: These availability judgments are preliminary and will be revisited after data exploration.
+
+## Phase 3 baseline features
+
+The feature matrix contains exactly these columns, in this order:
+
+1. `amount`
+2. `log1p_amount`
+3. `oldbalanceOrg`
+4. `origin_zero_balance`
+5. `amount_exceeds_origin_balance`
+6. `amount_to_origin_balance`
+7. `type_CASH_IN`
+8. `type_CASH_OUT`
+9. `type_DEBIT`
+10. `type_PAYMENT`
+11. `type_TRANSFER`
+
+When `oldbalanceOrg` is zero, `amount_to_origin_balance` is explicitly set to `0.0`; `origin_zero_balance` preserves the information that the denominator was zero. No scaling, imputation, fitting, historical aggregation, or model-specific preprocessing occurs in this phase.

@@ -14,3 +14,5 @@ This project scaffold establishes the foundation for an explainable fraud risk e
 - Precision measures how many flagged transactions are actually fraud, while recall measures how much fraud the review process catches. Both matter because investigations have limited capacity and false alerts consume analyst time.
 - The `isFlaggedFraud` comparison shows what an existing deterministic rule catches and misses; it is a benchmark, not a feature or a replacement for model evaluation.
 - EDA is separated from feature engineering and modelling so observed patterns can be documented before choices about transformations, leakage, splits, or algorithms are made.
+- Phase 3 intentionally excludes variables that might be predictive but would not be available at scoring time. A feature that improves an offline score through post-transaction information is not a credible production feature; excluding it protects the validity of the fraud-risk system.
+- The baseline keeps only amount, origin-side pre-transaction information, simple explainable ratios/indicators, and fixed transaction-type flags. This makes each column easy to describe and audit.

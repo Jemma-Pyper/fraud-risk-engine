@@ -33,3 +33,6 @@ python scripts/run_eda.py data/raw/paysim_transactions.csv
 ```
 
 No modelling, feature engineering, resampling, or train/test splitting occurs during Phase 2. The raw PaySim dataset is not committed to this repository.
+
+## Phase 3: Leakage-aware baseline feature engineering
+Phase 3 creates a deliberately conservative feature matrix with exactly 11 inspectable features: transaction amount, a log-transformed amount, origin balance relationships, and fixed transaction-type indicators. The target `isFraud`, benchmark `isFlaggedFraud`, raw identifiers, both post-transaction balances, destination balance data, and `step` are excluded from the baseline matrix. `step` is retained in raw data for future chronological splitting after its time semantics are verified.

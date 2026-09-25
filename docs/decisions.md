@@ -20,3 +20,9 @@
 - Kept exploratory balance quantities descriptive only; balance discrepancies in simulated data are not proof of fraud and are not automatically promoted to features.
 - Did not perform modelling, feature engineering, resampling, or splitting during EDA.
 - For continuous-distribution plots, retain all fraud rows and deterministically sample only non-fraud rows with `random_state=42`; keep all summaries and benchmark metrics on the full dataset.
+
+## 2026-09-25
+- Made the Phase 3 baseline deliberately conservative: it excludes `step`, destination balances, raw identifiers, target/benchmark columns, and all post-transaction balances.
+- Fixed the baseline feature order to amount, `log1p_amount`, origin balance features, and five transaction-type indicators.
+- Treat `amount / oldbalanceOrg` as `0.0` when the origin balance is zero, with a separate `origin_zero_balance` indicator preserving that state.
+- Deferred historical identifier aggregates until a temporally safe pipeline exists that uses only transactions strictly before the scored transaction.
