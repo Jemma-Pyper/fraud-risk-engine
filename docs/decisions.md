@@ -35,3 +35,12 @@
 - Keep `step` out of the predictor matrix; use it only for chronological partitioning until its hourly meaning is verified.
 - Keep the test partition untouched during Phase 5 model selection.
 - Permit future historical features to use only transactions from strictly earlier steps, never other transactions from the same step.
+
+## 2026-09-26: Phase 5 validation baselines
+- Added scikit-learn for a prior dummy classifier and explicit logistic-regression pipelines.
+- Fit preprocessing and models on train only; used validation only for comparison and reference-threshold metrics; did not build or evaluate test features.
+- Chose Average Precision as the primary ranking metric because fraud is rare; ROC-AUC remains secondary and accuracy is contextual only.
+- Kept `isFlaggedFraud` separate as a binary validation benchmark rather than passing it to continuous-score metrics.
+- Validation Average Precision was `0.729030` for unweighted logistic regression and `0.692946` for balanced logistic regression; the unweighted model is the stronger provisional ranking baseline under the primary metric.
+- Balanced logistic regression achieved recall `1.000000` at threshold `0.5` but precision `0.133333` and 10,010 false positives, demonstrating the operational trade-off from class weighting.
+- Threshold `0.5` remains a reference/default threshold, not an operational decision; calibration and final test evaluation are deferred.

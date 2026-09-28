@@ -1,0 +1,149 @@
+{
+  "train_step_range": [
+    1,
+    446
+  ],
+  "validation_step_range": [
+    447,
+    594
+  ],
+  "feature_names": [
+    "amount",
+    "log1p_amount",
+    "oldbalanceOrg",
+    "origin_zero_balance",
+    "amount_exceeds_origin_balance",
+    "amount_to_origin_balance",
+    "type_CASH_IN",
+    "type_CASH_OUT",
+    "type_DEBIT",
+    "type_PAYMENT",
+    "type_TRANSFER"
+  ],
+  "primary_metric": "Average Precision",
+  "threshold": 0.5,
+  "threshold_label": "Reference/default threshold, not an operationally selected threshold",
+  "test_evaluated": false,
+  "baselines": {
+    "dummy_prior": {
+      "model_name": "dummy_prior",
+      "class_weight": null,
+      "ranking_metrics": {
+        "average_precision": 0.0067516912109640455,
+        "roc_auc": 0.5
+      },
+      "threshold": 0.5,
+      "threshold_label": "Reference/default threshold, not an operationally selected threshold",
+      "threshold_metrics": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "accuracy": 0.9932483087890359,
+        "true_positives": 0,
+        "false_positives": 0,
+        "true_negatives": 226551,
+        "false_negatives": 1540,
+        "confusion_matrix": [
+          [
+            226551,
+            0
+          ],
+          [
+            1540,
+            0
+          ]
+        ]
+      },
+      "fit_seconds": null,
+      "convergence_warnings": []
+    },
+    "isFlaggedFraud": {
+      "model_name": "isFlaggedFraud",
+      "binary_metrics": {
+        "precision": 1.0,
+        "recall": 0.0012987012987012987,
+        "f1": 0.0025940337224383916,
+        "accuracy": 0.9932570772191801,
+        "true_positives": 2,
+        "false_positives": 0,
+        "true_negatives": 226551,
+        "false_negatives": 1538,
+        "confusion_matrix": [
+          [
+            226551,
+            0
+          ],
+          [
+            1538,
+            2
+          ]
+        ]
+      },
+      "note": "Fixed binary rule benchmark; no ranking metrics calculated."
+    },
+    "logistic_unweighted": {
+      "model_name": "logistic_unweighted",
+      "class_weight": null,
+      "ranking_metrics": {
+        "average_precision": 0.7290299850363265,
+        "roc_auc": 0.9846065107211605
+      },
+      "threshold": 0.5,
+      "threshold_label": "Reference/default threshold, not an operationally selected threshold",
+      "threshold_metrics": {
+        "precision": 1.0,
+        "recall": 0.20324675324675326,
+        "f1": 0.3378305450620615,
+        "accuracy": 0.994620568106589,
+        "true_positives": 313,
+        "false_positives": 0,
+        "true_negatives": 226551,
+        "false_negatives": 1227,
+        "confusion_matrix": [
+          [
+            226551,
+            0
+          ],
+          [
+            1227,
+            313
+          ]
+        ]
+      },
+      "fit_seconds": 12.683646199991927,
+      "convergence_warnings": []
+    },
+    "logistic_balanced": {
+      "model_name": "logistic_balanced",
+      "class_weight": "balanced",
+      "ranking_metrics": {
+        "average_precision": 0.6929459938381655,
+        "roc_auc": 0.9948531585474261
+      },
+      "threshold": 0.5,
+      "threshold_label": "Reference/default threshold, not an operationally selected threshold",
+      "threshold_metrics": {
+        "precision": 0.13333333333333333,
+        "recall": 1.0,
+        "f1": 0.23529411764705882,
+        "accuracy": 0.9561140071287337,
+        "true_positives": 1540,
+        "false_positives": 10010,
+        "true_negatives": 216541,
+        "false_negatives": 0,
+        "confusion_matrix": [
+          [
+            216541,
+            10010
+          ],
+          [
+            0,
+            1540
+          ]
+        ]
+      },
+      "fit_seconds": 18.030995000037365,
+      "convergence_warnings": []
+    }
+  }
+}

@@ -41,3 +41,8 @@ Phase 3 creates a deliberately conservative feature matrix with exactly 11 inspe
 Phase 4 prepares chronological modelling datasets using whole PaySim `step` values. The fixed partitions are train steps `1-446`, validation steps `447-594`, and test steps `595-743`. This preserves temporal ordering and avoids splitting transactions from the same step across partitions. `step` is used for chronology only and remains excluded from the Phase 3 feature matrix.
 
 The observed fraud rate rises across later periods, so this temporal distribution shift is documented rather than hidden with a random split. The test partition must remain untouched during Phase 5 model selection. Historical account features, if added later, must use only steps strictly earlier than the transaction being scored.
+
+## Phase 5: Baseline modelling and validation
+Phase 5 evaluates a prior-probability dummy baseline, the validation-only `isFlaggedFraud` rule benchmark, and two logistic-regression pipelines using train steps `1-446` and validation steps `447-594`. The test partition is sealed: no test features, labels, predictions, or metrics are used.
+
+Average Precision is the primary ranking metric, ROC-AUC is secondary, and threshold `0.5` is reported only as a reference/default threshold. The validation results and validation-only curves are saved under `reports/modeling/`. Balanced logistic regression improves recall at the reference threshold but creates substantially more false positives; its outputs are not assumed to be calibrated probabilities.
