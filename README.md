@@ -46,3 +46,12 @@ The observed fraud rate rises across later periods, so this temporal distributio
 Phase 5 evaluates a prior-probability dummy baseline, the validation-only `isFlaggedFraud` rule benchmark, and two logistic-regression pipelines using train steps `1-446` and validation steps `447-594`. The test partition is sealed: no test features, labels, predictions, or metrics are used.
 
 Average Precision is the primary ranking metric, ROC-AUC is secondary, and threshold `0.5` is reported only as a reference/default threshold. The validation results and validation-only curves are saved under `reports/modeling/`. Balanced logistic regression improves recall at the reference threshold but creates substantially more false positives; its outputs are not assumed to be calibrated probabilities.
+
+## Phase 6A: Validation threshold analysis
+Phase 6A advances the unweighted logistic-regression pipeline because it had the strongest validation Average Precision under the pre-defined model-selection policy. The balanced model's higher ROC-AUC and perfect recall at threshold `0.5` do not override the AP-primary policy.
+
+The phase examines validation-only recall-target operating points for the TRAIN-fitted unweighted model. It reports precision, recall, F1, confusion counts, alert counts, and alert rates without inventing business costs, review capacity, or an automatic max-F1 threshold. The threshold is selected only after owner review of the Phase 6A evidence, and the test partition remains sealed for a later one-time evaluation.
+
+After reviewing the validation trade-off table, the project owner selected the `minimum_recall_0.70` operating point as the frozen demonstration threshold for the later out-of-time test evaluation. This is a project policy choice, not an economically optimal or production-ready bank threshold. The selected threshold preserves its full machine-readable precision in `reports/modeling/threshold_analysis.json`; documentation may show it rounded.
+
+At validation recall `0.70`, the model captured 1,078 fraud cases with 734 false positives and an alert rate below 1%. Moving from 50% to 70% recall added 308 fraud detections and 668 false positives; later recall increases created steeper false-positive growth. The unweighted logistic model and preprocessing remain fitted on TRAIN only, no train+validation refit is planned, and the selected threshold will transfer unchanged to TEST when Phase 6B opens the sealed test period.

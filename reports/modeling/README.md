@@ -23,3 +23,17 @@ At the reference threshold of `0.5`, unweighted logistic regression had precisio
 The `isFlaggedFraud` validation benchmark had precision `1.000000`, recall `0.001299`, F1 `0.002594`, 2 true positives, and 0 false positives. It was evaluated as binary predictions only; no model-style ranking metrics were calculated for it.
 
 The test partition was sealed and no test features, labels, predictions, or metrics were accessed. Balanced-model scores should not automatically be interpreted as calibrated probabilities because class weighting changes the effective fitting prior and validation prevalence differs from training prevalence.
+
+## Phase 6A threshold analysis
+
+Phase 6A advances the unweighted logistic-regression pipeline because Average Precision was the pre-defined primary model-selection metric. The balanced model's higher ROC-AUC and perfect recall at threshold `0.5` are useful context, but they do not override the AP-primary model-selection policy.
+
+The threshold analysis keeps the TRAIN-fitted preprocessing and unweighted logistic model. It uses validation scores only to report recall-target operating points and the reference threshold `0.5`, which remains a reference/default threshold rather than an operationally selected threshold.
+
+The threshold table reports precision, recall, F1, confusion counts, alert counts, and alert rates. These quantities show the operating trade-off without inventing fraud-review capacity, false-positive costs, false-negative costs, or an automatic max-F1 decision rule. The demonstration threshold is selected only after owner review of the Phase 6A evidence, and the test partition remains sealed for the later one-time final evaluation.
+
+The selected demonstration policy is `minimum_recall_0.70`, with exact stored threshold `0.02895689437774259`. This threshold is a project/portfolio policy choice chosen after reviewing validation operating points; it is not optimal, profit-maximising, production-ready, or economically optimal for a real bank.
+
+At the selected point, validation precision was `0.594923`, recall was `0.700000`, F1 was `0.643198`, and the model produced 1,812 alerts, or about `0.7944%` of validation transactions. The marginal trade-off supported this choice: moving from 50% to 70% recall added 308 fraud detections and 668 false positives, while 70% to 80% added 154 fraud detections and 1,558 false positives; later recall increases raised the false-positive burden more sharply.
+
+The selected threshold will be transferred unchanged to the future TEST evaluation. The model remains unweighted logistic regression, preprocessing remains fitted on TRAIN only, the model remains fitted on TRAIN only, and no train+validation refit will occur before Phase 6B. TEST remains sealed.

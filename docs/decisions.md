@@ -44,3 +44,20 @@
 - Validation Average Precision was `0.729030` for unweighted logistic regression and `0.692946` for balanced logistic regression; the unweighted model is the stronger provisional ranking baseline under the primary metric.
 - Balanced logistic regression achieved recall `1.000000` at threshold `0.5` but precision `0.133333` and 10,010 false positives, demonstrating the operational trade-off from class weighting.
 - Threshold `0.5` remains a reference/default threshold, not an operational decision; calibration and final test evaluation are deferred.
+
+## 2026-09-28: Phase 6A validation threshold analysis
+- Advanced the unweighted logistic-regression pipeline because Average Precision was the pre-defined primary model-selection metric and it outperformed the balanced model on validation AP.
+- Kept the balanced model as useful contrast only; its recall `1.000000` at threshold `0.5` reflects one threshold's classification behaviour, not superior AP-primary ranking performance.
+- Retained the TRAIN-fitted preprocessing and unweighted logistic model for the future final test evaluation instead of refitting on train plus validation, so the validation-selected threshold remains tied to the same score distribution.
+- Examined validation-only recall-target operating points using the most conservative threshold that still reaches each requested recall level.
+- Reported alert counts and alert rates so threshold trade-offs are visible without inventing business costs, review capacity, or false-positive/false-negative cost assumptions.
+- Kept F1 descriptive only because maximizing F1 would assume precision and recall should be weighted equally.
+- The initial threshold-analysis run did not automatically select a threshold, evaluate test metrics, build test features, resample data, or begin Phase 6B.
+- Documented that temporal prevalence shift may affect threshold transfer; this will be measured once on the sealed test period later, not tuned on test.
+- After reviewing the validation operating points, selected `minimum_recall_0.70` as the frozen demonstration threshold for the future out-of-time test evaluation.
+- Stored the exact selected threshold as `0.02895689437774259`; rounded displays are documentation-only.
+- Treated the threshold as a project/portfolio policy choice, not an optimal, profit-maximising, production-ready, or economically optimal bank threshold.
+- The selected point captured validation recall `0.700000` with precision `0.594923`, 1,078 true positives, 734 false positives, 462 false negatives, 1,812 alerts, and alert rate about `0.7944%`.
+- Chose this point because marginal alert burden increased beyond 70% recall: 70% to 80% added 154 fraud detections and 1,558 false positives; 80% to 90% added 154 fraud detections and 4,527 false positives; 90% to 95% added 77 fraud detections and 5,497 false positives.
+- The model and preprocessing remain fitted on TRAIN only; no train+validation refit will occur before the one-time TEST evaluation.
+- TEST remains sealed, and the selected threshold will be transferred unchanged to TEST in Phase 6B.
