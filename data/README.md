@@ -6,7 +6,7 @@ This project uses the PaySim synthetic transaction dataset as a demonstration of
 Place the raw dataset CSV in:
 
 ```
-data/raw/paysim_transactions.csv
+data/PS_20174392719_1491204439457_log.csv
 ```
 
 ## Expected columns

@@ -45,3 +45,7 @@ The raw `step` field is used as the available chronological ordering variable on
 - Test: steps `595-743`
 
 Transactions sharing a step remain in one partition because the current schema does not provide reliable ordering within a step. Future historical features may use information from strictly earlier steps, but must not treat another transaction from the same step as known prior history. The test partition must remain untouched while models and settings are selected in Phase 5.
+
+## Final modelling status
+
+TEST was later opened once in Phase 6B for the final out-of-time evaluation. It was not used for preprocessing fitting, model fitting, model selection, or threshold selection before that final evaluation, and no post-TEST tuning occurred.

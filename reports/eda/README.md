@@ -5,7 +5,7 @@ This directory contains reproducible exploratory-analysis outputs. Figures are g
 Run the analysis with an explicit PaySim path:
 
 ```bash
-python scripts/run_eda.py data/raw/paysim_transactions.csv
+python scripts/run_eda.py data/PS_20174392719_1491204439457_log.csv
 ```
 
 The reusable calculations live in `src/fraud_engine/eda.py`. The raw dataset is not committed to the repository. All numerical summaries and benchmark statistics use the full dataset. Only the amount and balance distribution plots use a visualization sample: every fraud row is retained, only the majority non-fraud class is sampled, and `random_state=42` makes the result reproducible. Any output generated from the one-row test fixture is only a smoke check and must not be presented as real PaySim findings.

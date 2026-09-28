@@ -1,68 +1,220 @@
 # Explainable Fraud Risk Engine
 
-A portfolio project demonstrating production-style Python, fraud-risk modelling, explainable machine learning, and a future agentic AI extension.
+An end-to-end portfolio project for building, validating, and documenting an
+explainable fraud-risk model on simulated PaySim transaction data. The project
+emphasises leakage control, chronological evaluation, transparent features, and a
+frozen validation-selected operating policy.
 
-## Phase 0: Repository foundation
-This phase creates the initial project scaffold, packaging, documentation, and CI to support future fraud modelling work. No data ingestion or model training is included yet.
+The modelling lifecycle is complete through Phase 6B. The final out-of-time TEST
+result is historical and must not be rewritten by later portfolio extensions.
 
-## Getting started
-Install dependencies:
+## Problem
 
-```bash
+Fraud detection is a highly imbalanced classification problem: most transactions
+are legitimate, so accuracy alone can look strong while fraud is missed. A useful
+fraud-review model must balance fraud capture against false alerts because every
+alert can consume analyst time.
+
+Offline fraud modelling also has a leakage risk. Features that are known only
+after a transaction, or modelling choices made after seeing final holdout
+performance, can make results look more credible than they would be in a real
+forward-scoring workflow. This project therefore evaluates forward in time using
+a chronological split instead of a random split.
+
+## Dataset
+
+The project uses PaySim-style simulated transaction data. The raw CSV is not
+committed to this repository; place it at:
+
+```text
+data/PS_20174392719_1491204439457_log.csv
+```
+
+Repository documentation records the observed dataset facts used during this
+portfolio build, including 6,362,620 rows, 8,213 fraud transactions, and an
+overall fraud rate of 0.129082%. Because PaySim is simulated, the final results
+are portfolio evidence for modelling discipline and communication, not claims of
+real-bank production performance.
+
+## Approach
+
+1. Validate the raw PaySim schema and core data-quality rules.
+2. Explore class imbalance, transaction types, amounts, balances, identifiers,
+   and the existing `isFlaggedFraud` rule benchmark.
+3. Build a conservative leakage-aware feature matrix.
+4. Split whole chronological `step` values into TRAIN, VALIDATION, and TEST.
+5. Compare prior, rule-based, unweighted logistic, and class-weighted logistic
+   baselines on VALIDATION.
+6. Select a demonstration threshold on VALIDATION only.
+7. Run the final out-of-time TEST evaluation once using the frozen policy.
+
+## Results at a glance
+
+Frozen model policy: unweighted logistic regression, `class_weight=None`,
+preprocessing fitted on TRAIN only, model fitted on TRAIN only, no
+train+validation refit.
+
+Frozen validation-selected threshold: `0.02895689437774259`
+
+| Final TEST metric | Value |
+|---|---:|
+| Average Precision | 0.780443 |
+| ROC-AUC | 0.982586 |
+| Precision | 72.59% |
+| Recall | 68.68% |
+| F1 | 0.705809 |
+| Alerts | 1,565 |
+| Alert rate | 1.2664% |
+
+At the frozen threshold, the final TEST confusion counts were 1,136 true
+positives, 429 false positives, 121,497 true negatives, and 518 false negatives.
+The threshold is a validation-selected demonstration policy, not an optimal,
+economically optimal, profit-maximising, or production-ready bank threshold.
+
+The `isFlaggedFraud` TEST benchmark had precision `1.000000` but recall only
+`0.004837`, detecting 8 of 1,654 fraud cases.
+
+## Why the evaluation is credible
+
+- The split is chronological: TRAIN steps `1-446`, VALIDATION steps `447-594`,
+  and TEST steps `595-743`.
+- Whole `step` values stay together, avoiding cross-partition leakage within a
+  shared timestamp-like group.
+- The feature contract excludes post-transaction balances, identifiers,
+  destination balance information, the target, the benchmark rule, and `step`.
+- Preprocessing was fitted on TRAIN only.
+- The model was fitted on TRAIN only.
+- The model was chosen on VALIDATION using Average Precision as the predefined
+  primary metric.
+- The threshold was chosen on VALIDATION only.
+- TEST was used once for final model-performance evaluation.
+- No post-TEST tuning occurred.
+
+Accurate test-seal wording: TEST was not used for preprocessing fitting, model
+fitting, model selection, threshold selection, or model-performance evaluation
+before Phase 6B. Earlier phases documented split-level TEST row counts and
+prevalence, so the project does not claim TEST labels were literally never
+observed anywhere.
+
+## Feature set
+
+The final model uses exactly 11 features:
+
+1. `amount`
+2. `log1p_amount`
+3. `oldbalanceOrg`
+4. `origin_zero_balance`
+5. `amount_exceeds_origin_balance`
+6. `amount_to_origin_balance`
+7. `type_CASH_IN`
+8. `type_CASH_OUT`
+9. `type_DEBIT`
+10. `type_PAYMENT`
+11. `type_TRANSFER`
+
+Excluded from `X`: `isFraud`, `isFlaggedFraud`, raw identifiers, both
+post-transaction origin balances, destination balance information, and `step`.
+The `step` field is used only for chronological splitting.
+
+## Repository structure
+
+```text
+src/fraud_engine/      Reusable data, feature, split, modelling, and evaluation code
+scripts/               Reproducible workflow entry points
+tests/                 Unit and contract tests
+docs/                  Decisions, feature availability, EDA findings, interview notes
+reports/eda/           EDA notes and generated EDA figures
+reports/modeling/      Validation, threshold, and final TEST artifacts
+data/                  Dataset guidance; raw PaySim CSV is ignored
+```
+
+## Reproducibility
+
+Create and activate an environment:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install .[dev]
 ```
 
-Run lint and tests:
+Run local quality checks:
 
-```bash
-ruff check src tests
-pytest
+```powershell
+python -m ruff check src tests scripts
+python -m pytest -q
 ```
 
-## Phase 1: Data ingestion and validation
-This phase adds safe PaySim data loading and schema validation, including checks for required columns, numeric values, fraud labels restricted to 0 or 1, and warnings for zero-amount transactions. It also documents the dataset expectations and separates fatal errors from non-fatal data-quality warnings.
+Provide the raw PaySim CSV at:
 
-## Phase 2: Exploratory data analysis
-This phase adds reusable exploratory-analysis functions for dataset structure, fraud prevalence, fraud by transaction type, transaction amounts, balances, identifiers, and the existing `isFlaggedFraud` benchmark. Figures are saved under `reports/eda/figures/`.
-
-Run EDA against an explicitly supplied PaySim CSV:
-
-```bash
-python scripts/run_eda.py data/raw/paysim_transactions.csv
+```text
+data/PS_20174392719_1491204439457_log.csv
 ```
 
-No modelling, feature engineering, resampling, or train/test splitting occurs during Phase 2. The raw PaySim dataset is not committed to this repository.
+Run historical workflows:
 
-## Phase 3: Leakage-aware baseline feature engineering
-Phase 3 creates a deliberately conservative feature matrix with exactly 11 inspectable features: transaction amount, a log-transformed amount, origin balance relationships, and fixed transaction-type indicators. The target `isFraud`, benchmark `isFlaggedFraud`, raw identifiers, both post-transaction balances, destination balance data, and `step` are excluded from the baseline matrix. `step` is retained in raw data for future chronological splitting after its time semantics are verified.
+```powershell
+python scripts/run_eda.py data/PS_20174392719_1491204439457_log.csv
+python scripts/run_validation_baselines.py data/PS_20174392719_1491204439457_log.csv
+python scripts/run_threshold_analysis.py data/PS_20174392719_1491204439457_log.csv
+```
 
-## Phase 4: Chronological data splitting
-Phase 4 prepares chronological modelling datasets using whole PaySim `step` values. The fixed partitions are train steps `1-446`, validation steps `447-594`, and test steps `595-743`. This preserves temporal ordering and avoids splitting transactions from the same step across partitions. `step` is used for chronology only and remains excluded from the Phase 3 feature matrix.
+FINAL EVALUATION ALREADY EXECUTED:
 
-The observed fraud rate rises across later periods, so this temporal distribution shift is documented rather than hidden with a random split. The test partition must remain untouched during Phase 5 model selection. Historical account features, if added later, must use only steps strictly earlier than the transaction being scored.
+```powershell
+python scripts/run_final_test_evaluation.py data/PS_20174392719_1491204439457_log.csv
+```
 
-## Phase 5: Baseline modelling and validation
-Phase 5 evaluates a prior-probability dummy baseline, the validation-only `isFlaggedFraud` rule benchmark, and two logistic-regression pipelines using train steps `1-446` and validation steps `447-594`. The test partition is sealed: no test features, labels, predictions, or metrics are used.
+The final TEST runner is preserved for auditability and reproducibility of the
+historical result. It should not be casually rerun as another tuning loop, and
+its output must not be used to change the frozen model, features, preprocessing,
+threshold, or hyperparameters.
 
-Average Precision is the primary ranking metric, ROC-AUC is secondary, and threshold `0.5` is reported only as a reference/default threshold. The validation results and validation-only curves are saved under `reports/modeling/`. Balanced logistic regression improves recall at the reference threshold but creates substantially more false positives; its outputs are not assumed to be calibrated probabilities.
+## Reports and artifacts
 
-## Phase 6A: Validation threshold analysis
-Phase 6A advances the unweighted logistic-regression pipeline because it had the strongest validation Average Precision under the pre-defined model-selection policy. The balanced model's higher ROC-AUC and perfect recall at threshold `0.5` do not override the AP-primary policy.
+- `reports/modeling/validation_results.json`: Phase 5 validation baselines.
+- `reports/modeling/threshold_analysis.json`: Phase 6A validation threshold
+  analysis and frozen threshold policy.
+- `reports/modeling/test_results.json`: Phase 6B final out-of-time TEST result.
+- `reports/modeling/figures/`: validation precision-recall, ROC, and threshold
+  trade-off figures.
+- `reports/eda/figures/`: exploratory class, type, amount, balance, and benchmark
+  visuals.
 
-The phase examines validation-only recall-target operating points for the TRAIN-fitted unweighted model. It reports precision, recall, F1, confusion counts, alert counts, and alert rates without inventing business costs, review capacity, or an automatic max-F1 threshold. The threshold is selected only after owner review of the Phase 6A evidence, and the test partition remains sealed for a later one-time evaluation.
+The JSON artifacts are the source of truth for exact metric values.
 
-After reviewing the validation trade-off table, the project owner selected the `minimum_recall_0.70` operating point as the frozen demonstration threshold for the later out-of-time test evaluation. This is a project policy choice, not an economically optimal or production-ready bank threshold. The selected threshold preserves its full machine-readable precision in `reports/modeling/threshold_analysis.json`; documentation may show it rounded.
+## Limitations
 
-At validation recall `0.70`, the model captured 1,078 fraud cases with 734 false positives and an alert rate below 1%. Moving from 50% to 70% recall added 308 fraud detections and 668 false positives; later recall increases created steeper false-positive growth. The unweighted logistic model and preprocessing remain fitted on TRAIN only, no train+validation refit is planned, and the selected threshold will transfer unchanged to TEST when Phase 6B opens the sealed test period.
+- PaySim is simulated transaction data.
+- The model is intentionally simple and uses a conservative 11-feature contract.
+- The project does not claim real-bank production performance.
+- No business-specific analyst capacity, false-positive cost, or false-negative
+  cost matrix was available.
+- The threshold is a demonstration policy selected from validation trade-offs.
+- Temporal distribution shift exists across TRAIN, VALIDATION, and TEST periods.
 
-## Phase 6B: Final out-of-time test evaluation
-Phase 6B performs the one-time final TEST evaluation on steps `595-743` using the frozen Phase 6A policy: unweighted logistic regression, preprocessing fitted on TRAIN only, model fitted on TRAIN only, no train+validation refit, and the validation-selected threshold `0.02895689437774259` transferred unchanged to TEST.
+## Future portfolio extensions
 
-The final TEST ranking metrics were Average Precision `0.780443` and ROC-AUC `0.982586`. At the frozen threshold, the model reached precision `0.725879`, recall `0.686820`, F1 `0.705809`, with 1,136 true positives, 429 false positives, 518 false negatives, 1,565 alerts, and alert rate `1.2664%`.
+Future work should be clearly separated from the frozen historical model result.
+Useful extensions include:
 
-Compared with validation, TEST Average Precision was higher while ROC-AUC remained similar. Average Precision is prevalence-sensitive, and the TEST period has a different fraud prevalence, so the AP increase should not be read as an intrinsic model improvement. The threshold transfer was reasonable: the validation-selected 70% recall policy produced TEST recall about `68.7%` and higher precision than validation.
+- descriptive explainability for the frozen logistic model and feature set
+- monitoring and drift design
+- a lightweight results dashboard
+- an optional agentic investigation assistant that uses frozen outputs
 
-The `isFlaggedFraud` TEST benchmark had precision `1.000000` but recall only `0.004837`, detecting 8 of 1,654 fraud cases. It remains a narrow binary benchmark rather than a model feature or replacement for scored review prioritisation.
+Future work must not rewrite the historical TEST result or reopen model
+selection, threshold selection, feature engineering, preprocessing, or
+hyperparameter tuning.
 
-The correct test-seal claim is that TEST was not used for model fitting, preprocessing fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B. Split-level TEST row counts and prevalence were documented earlier, so the project does not claim test labels were literally never observed anywhere. TEST results are final out-of-time evaluation evidence only and are not used to change the model, threshold, features, preprocessing, solver, class weight, resampling, or hyperparameters.
+## Development history
+
+- Phase 0: repository scaffold, packaging, CI, and data guidance.
+- Phase 1: PaySim ingestion and validation.
+- Phase 2: exploratory data analysis and figures.
+- Phase 3: leakage-aware 11-feature baseline matrix.
+- Phase 4: chronological whole-step train/validation/test split.
+- Phase 5: validation baselines with Average Precision as the primary metric.
+- Phase 6A: validation-only threshold analysis and frozen demonstration policy.
+- Phase 6B: one-time final out-of-time TEST evaluation.
