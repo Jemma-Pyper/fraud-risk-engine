@@ -37,3 +37,11 @@ The selected demonstration policy is `minimum_recall_0.70`, with exact stored th
 At the selected point, validation precision was `0.594923`, recall was `0.700000`, F1 was `0.643198`, and the model produced 1,812 alerts, or about `0.7944%` of validation transactions. The marginal trade-off supported this choice: moving from 50% to 70% recall added 308 fraud detections and 668 false positives, while 70% to 80% added 154 fraud detections and 1,558 false positives; later recall increases raised the false-positive burden more sharply.
 
 The selected threshold will be transferred unchanged to the future TEST evaluation. The model remains unweighted logistic regression, preprocessing remains fitted on TRAIN only, the model remains fitted on TRAIN only, and no train+validation refit will occur before Phase 6B. TEST remains sealed.
+
+## Phase 6B final test preparation
+
+Phase 6B prepares, but does not yet execute, the one-time final out-of-time TEST evaluation. The prepared runner verifies the frozen Phase 6A threshold artifact, fits the approved unweighted logistic pipeline on TRAIN only, and will apply the validation-selected threshold unchanged when TEST is explicitly opened.
+
+The eventual `test_results.json` artifact will record TEST Average Precision, ROC-AUC, frozen-threshold metrics, alert count, alert rate, and the `isFlaggedFraud` binary benchmark. TEST results are final evaluation evidence only: they must not be used to change the model, threshold, features, preprocessing, class weights, solver, or hyperparameters.
+
+The project distinguishes documented split-level TEST information from model evaluation. TEST was not used for preprocessing fitting, model fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B.

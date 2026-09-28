@@ -61,3 +61,12 @@
 - Chose this point because marginal alert burden increased beyond 70% recall: 70% to 80% added 154 fraud detections and 1,558 false positives; 80% to 90% added 154 fraud detections and 4,527 false positives; 90% to 95% added 77 fraud detections and 5,497 false positives.
 - The model and preprocessing remain fitted on TRAIN only; no train+validation refit will occur before the one-time TEST evaluation.
 - TEST remains sealed, and the selected threshold will be transferred unchanged to TEST in Phase 6B.
+
+## 2026-09-28: Phase 6B final test preparation
+- Prepared the final out-of-time TEST evaluation code without running it on the real TEST period.
+- The final evaluation policy remains frozen: unweighted logistic regression, preprocessing fitted on TRAIN only, model fitted on TRAIN only, no train+validation refit, and selected threshold `0.02895689437774259`.
+- The final-test runner reads and verifies the Phase 6A threshold artifact rather than recalculating or reselecting a threshold.
+- The eventual model evaluation will report TEST Average Precision, ROC-AUC, frozen-threshold classification metrics, alert count, and alert rate.
+- The `isFlaggedFraud` benchmark will be evaluated on TEST as binary predictions only, not as continuous model scores.
+- TEST results will be used as final out-of-time evaluation only; they must not drive model, threshold, feature, preprocessing, solver, class-weight, resampling, or hyperparameter changes.
+- The correct test-seal wording is that TEST was not used for model fitting, preprocessing fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B.
