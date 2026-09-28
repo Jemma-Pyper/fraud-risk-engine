@@ -56,7 +56,13 @@ After reviewing the validation trade-off table, the project owner selected the `
 
 At validation recall `0.70`, the model captured 1,078 fraud cases with 734 false positives and an alert rate below 1%. Moving from 50% to 70% recall added 308 fraud detections and 668 false positives; later recall increases created steeper false-positive growth. The unweighted logistic model and preprocessing remain fitted on TRAIN only, no train+validation refit is planned, and the selected threshold will transfer unchanged to TEST when Phase 6B opens the sealed test period.
 
-## Phase 6B: Final out-of-time test evaluation preparation
-Phase 6B prepares the one-time final TEST evaluation without opening TEST during preparation. The runner will reuse the frozen Phase 6A policy: unweighted logistic regression, preprocessing fitted on TRAIN only, model fitted on TRAIN only, and threshold `0.02895689437774259` selected on VALIDATION.
+## Phase 6B: Final out-of-time test evaluation
+Phase 6B performs the one-time final TEST evaluation on steps `595-743` using the frozen Phase 6A policy: unweighted logistic regression, preprocessing fitted on TRAIN only, model fitted on TRAIN only, no train+validation refit, and the validation-selected threshold `0.02895689437774259` transferred unchanged to TEST.
 
-The correct test-seal claim is that TEST was not used for model fitting, preprocessing fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B. Split-level TEST row counts and prevalence were documented earlier, so the project does not claim test labels were literally never observed anywhere. Once TEST is opened, results are final out-of-time evaluation and must not be used to retune the policy.
+The final TEST ranking metrics were Average Precision `0.780443` and ROC-AUC `0.982586`. At the frozen threshold, the model reached precision `0.725879`, recall `0.686820`, F1 `0.705809`, with 1,136 true positives, 429 false positives, 518 false negatives, 1,565 alerts, and alert rate `1.2664%`.
+
+Compared with validation, TEST Average Precision was higher while ROC-AUC remained similar. Average Precision is prevalence-sensitive, and the TEST period has a different fraud prevalence, so the AP increase should not be read as an intrinsic model improvement. The threshold transfer was reasonable: the validation-selected 70% recall policy produced TEST recall about `68.7%` and higher precision than validation.
+
+The `isFlaggedFraud` TEST benchmark had precision `1.000000` but recall only `0.004837`, detecting 8 of 1,654 fraud cases. It remains a narrow binary benchmark rather than a model feature or replacement for scored review prioritisation.
+
+The correct test-seal claim is that TEST was not used for model fitting, preprocessing fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B. Split-level TEST row counts and prevalence were documented earlier, so the project does not claim test labels were literally never observed anywhere. TEST results are final out-of-time evaluation evidence only and are not used to change the model, threshold, features, preprocessing, solver, class weight, resampling, or hyperparameters.

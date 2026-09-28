@@ -38,10 +38,51 @@ At the selected point, validation precision was `0.594923`, recall was `0.700000
 
 The selected threshold will be transferred unchanged to the future TEST evaluation. The model remains unweighted logistic regression, preprocessing remains fitted on TRAIN only, the model remains fitted on TRAIN only, and no train+validation refit will occur before Phase 6B. TEST remains sealed.
 
-## Phase 6B final test preparation
+## Phase 6B final out-of-time test evaluation
 
-Phase 6B prepares, but does not yet execute, the one-time final out-of-time TEST evaluation. The prepared runner verifies the frozen Phase 6A threshold artifact, fits the approved unweighted logistic pipeline on TRAIN only, and will apply the validation-selected threshold unchanged when TEST is explicitly opened.
+Phase 6B executed the one-time final out-of-time TEST evaluation on steps `595-743`. The frozen policy remained unchanged: unweighted logistic regression, preprocessing fitted on TRAIN only, model fitted on TRAIN only, no train+validation refit, and selected threshold `0.02895689437774259` from the Phase 6A validation artifact.
 
-The eventual `test_results.json` artifact will record TEST Average Precision, ROC-AUC, frozen-threshold metrics, alert count, alert rate, and the `isFlaggedFraud` binary benchmark. TEST results are final evaluation evidence only: they must not be used to change the model, threshold, features, preprocessing, class weights, solver, or hyperparameters.
+| TEST metric | Value |
+|---|---:|
+| Average Precision | 0.780443 |
+| ROC-AUC | 0.982586 |
+| Precision at frozen threshold | 0.725879 |
+| Recall at frozen threshold | 0.686820 |
+| F1 at frozen threshold | 0.705809 |
+| Accuracy at frozen threshold | 0.992337 |
+| True positives | 1,136 |
+| False positives | 429 |
+| True negatives | 121,497 |
+| False negatives | 518 |
+| Alerts | 1,565 |
+| Alert rate | 1.2664% |
 
-The project distinguishes documented split-level TEST information from model evaluation. TEST was not used for preprocessing fitting, model fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B.
+Validation-to-TEST transfer:
+
+| Metric | Validation | TEST |
+|---|---:|---:|
+| Average Precision | 0.729030 | 0.780443 |
+| ROC-AUC | 0.984607 | 0.982586 |
+| Precision at selected threshold | 0.594923 | 0.725879 |
+| Recall at selected threshold | 0.700000 | 0.686820 |
+| F1 at selected threshold | 0.643198 | 0.705809 |
+| Alert rate | 0.7944% | 1.2664% |
+
+The selected validation threshold transferred reasonably: the 70% validation recall policy produced TEST recall about `68.7%` and higher TEST precision. The higher TEST Average Precision should be interpreted carefully because AP is prevalence-sensitive and the TEST period has different fraud prevalence; it should not be described as intrinsic model improvement. ROC-AUC remained similar across validation and TEST.
+
+`isFlaggedFraud` TEST benchmark:
+
+| Metric | Value |
+|---|---:|
+| Precision | 1.000000 |
+| Recall | 0.004837 |
+| F1 | 0.009627 |
+| Accuracy | 0.986681 |
+| True positives | 8 |
+| False positives | 0 |
+| True negatives | 121,926 |
+| False negatives | 1,646 |
+| Alerts | 8 |
+| Alert rate | 0.00647% |
+
+The project distinguishes documented split-level TEST information from model evaluation. TEST was not used for preprocessing fitting, model fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B. TEST results are final out-of-time evaluation evidence only and are not used to change the model, threshold, features, preprocessing, class weights, solver, resampling, or hyperparameters.

@@ -1,0 +1,83 @@
+{
+  "evaluation_type": "final_out_of_time_test",
+  "model_name": "unweighted logistic regression",
+  "model_selection_metric": "Average Precision",
+  "train_step_range": [
+    1,
+    446
+  ],
+  "test_step_range": [
+    595,
+    743
+  ],
+  "feature_names": [
+    "amount",
+    "log1p_amount",
+    "oldbalanceOrg",
+    "origin_zero_balance",
+    "amount_exceeds_origin_balance",
+    "amount_to_origin_balance",
+    "type_CASH_IN",
+    "type_CASH_OUT",
+    "type_DEBIT",
+    "type_PAYMENT",
+    "type_TRANSFER"
+  ],
+  "model_fitting_policy": "TRAIN only",
+  "preprocessing_fitting_policy": "TRAIN only",
+  "selected_threshold_policy": "minimum_recall_0.70",
+  "selected_threshold": 0.02895689437774259,
+  "threshold_selected_on": "VALIDATION",
+  "test_ranking_metrics": {
+    "average_precision": 0.7804427981734665,
+    "roc_auc": 0.9825862222890521
+  },
+  "test_threshold_metrics": {
+    "precision": 0.7258785942492013,
+    "recall": 0.686819830713422,
+    "f1": 0.7058092575333955,
+    "accuracy": 0.9923369477261693,
+    "true_positives": 1136,
+    "false_positives": 429,
+    "true_negatives": 121497,
+    "false_negatives": 518,
+    "confusion_matrix": [
+      [
+        121497,
+        429
+      ],
+      [
+        518,
+        1136
+      ]
+    ],
+    "alerts": 1565,
+    "alert_rate": 0.012663861466256676
+  },
+  "isFlaggedFraud_test_benchmark": {
+    "precision": 1.0,
+    "recall": 0.0048367593712212815,
+    "f1": 0.009626955475330927,
+    "accuracy": 0.9866806926687166,
+    "true_positives": 8,
+    "false_positives": 0,
+    "true_negatives": 121926,
+    "false_negatives": 1646,
+    "confusion_matrix": [
+      [
+        121926,
+        0
+      ],
+      [
+        1646,
+        8
+      ]
+    ],
+    "alerts": 8,
+    "alert_rate": 6.473539407671144e-05
+  },
+  "test_evaluated": true,
+  "frozen_policy_statement": "Model and threshold were frozen before final out-of-time test evaluation.",
+  "post_test_tuning": false,
+  "post_test_tuning_statement": "No model, feature, preprocessing, class-weight, hyperparameter, or threshold changes are made after seeing test results."
+}

@@ -70,3 +70,13 @@
 - The `isFlaggedFraud` benchmark will be evaluated on TEST as binary predictions only, not as continuous model scores.
 - TEST results will be used as final out-of-time evaluation only; they must not drive model, threshold, feature, preprocessing, solver, class-weight, resampling, or hyperparameter changes.
 - The correct test-seal wording is that TEST was not used for model fitting, preprocessing fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B.
+
+## 2026-09-28: Phase 6B final out-of-time test evaluation
+- Ran the final TEST evaluation once on steps `595-743` using the frozen Phase 6A policy: unweighted logistic regression, preprocessing fitted on TRAIN only, model fitted on TRAIN only, no train+validation refit, and threshold `0.02895689437774259`.
+- Recorded TEST Average Precision `0.780443` and ROC-AUC `0.982586`.
+- At the frozen threshold, recorded precision `0.725879`, recall `0.686820`, F1 `0.705809`, accuracy `0.992337`, 1,136 true positives, 429 false positives, 121,497 true negatives, 518 false negatives, 1,565 alerts, and alert rate `1.2664%`.
+- Evaluated `isFlaggedFraud` on TEST as a binary benchmark only: precision `1.000000`, recall `0.004837`, F1 `0.009627`, 8 true positives, 0 false positives, 121,926 true negatives, 1,646 false negatives, and 8 alerts.
+- The validation-selected threshold transferred reasonably: validation recall was `0.700000`, while TEST recall was `0.686820`; TEST precision was higher than validation precision (`0.725879` vs. `0.594923`).
+- Interpreted the higher TEST Average Precision carefully because AP is prevalence-sensitive and the out-of-time TEST period has a different fraud prevalence; ROC-AUC remained similar to validation.
+- Made no post-TEST changes to the model, threshold, features, preprocessing, solver, class weight, resampling, hyperparameters, or fitting policy.
+- TEST results are final out-of-time evidence for this portfolio phase, not inputs for further tuning.
