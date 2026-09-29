@@ -1,0 +1,143 @@
+{
+  "model_name": "unweighted logistic regression",
+  "class_weight": null,
+  "solver": "lbfgs",
+  "max_iter": 1000,
+  "fitting_policy": "TRAIN only",
+  "preprocessing_fitting_policy": "TRAIN only",
+  "model_input_feature_contract": [
+    "amount",
+    "log1p_amount",
+    "oldbalanceOrg",
+    "origin_zero_balance",
+    "amount_exceeds_origin_balance",
+    "amount_to_origin_balance",
+    "type_CASH_IN",
+    "type_CASH_OUT",
+    "type_DEBIT",
+    "type_PAYMENT",
+    "type_TRANSFER"
+  ],
+  "coefficient_feature_order": [
+    "amount",
+    "log1p_amount",
+    "oldbalanceOrg",
+    "amount_to_origin_balance",
+    "origin_zero_balance",
+    "amount_exceeds_origin_balance",
+    "type_CASH_IN",
+    "type_CASH_OUT",
+    "type_DEBIT",
+    "type_PAYMENT",
+    "type_TRANSFER"
+  ],
+  "intercept": -6.203620445590962,
+  "coefficients": [
+    {
+      "feature_name": "amount",
+      "coefficient": -0.04694158204773084,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "scaled_continuous",
+      "interpretation_note": "Coefficient corresponds to a one-standard-deviation increase after TRAIN-fitted scaling, holding other features fixed."
+    },
+    {
+      "feature_name": "log1p_amount",
+      "coefficient": 2.776812566657167,
+      "coefficient_direction": "positive",
+      "transformed_feature_type": "scaled_continuous",
+      "interpretation_note": "Coefficient corresponds to a one-standard-deviation increase after TRAIN-fitted scaling, holding other features fixed."
+    },
+    {
+      "feature_name": "oldbalanceOrg",
+      "coefficient": 0.1347626066683172,
+      "coefficient_direction": "positive",
+      "transformed_feature_type": "scaled_continuous",
+      "interpretation_note": "Coefficient corresponds to a one-standard-deviation increase after TRAIN-fitted scaling, holding other features fixed."
+    },
+    {
+      "feature_name": "amount_to_origin_balance",
+      "coefficient": -0.438042476371777,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "scaled_continuous",
+      "interpretation_note": "Coefficient corresponds to a one-standard-deviation increase after TRAIN-fitted scaling, holding other features fixed."
+    },
+    {
+      "feature_name": "origin_zero_balance",
+      "coefficient": -1.7976007543176793,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Coefficient corresponds to changing the indicator from 0 to 1, holding other features fixed."
+    },
+    {
+      "feature_name": "amount_exceeds_origin_balance",
+      "coefficient": -6.168978473814943,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Coefficient corresponds to changing the indicator from 0 to 1, holding other features fixed."
+    },
+    {
+      "feature_name": "type_CASH_IN",
+      "coefficient": -4.83732582394179,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Transaction type is encoded with all five mutually exclusive indicators and no omitted reference category; interpret this coefficient through relative category contrasts, holding other features fixed."
+    },
+    {
+      "feature_name": "type_CASH_OUT",
+      "coefficient": 0.25853032383160496,
+      "coefficient_direction": "positive",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Transaction type is encoded with all five mutually exclusive indicators and no omitted reference category; interpret this coefficient through relative category contrasts, holding other features fixed."
+    },
+    {
+      "feature_name": "type_DEBIT",
+      "coefficient": -0.2205324677450739,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Transaction type is encoded with all five mutually exclusive indicators and no omitted reference category; interpret this coefficient through relative category contrasts, holding other features fixed."
+    },
+    {
+      "feature_name": "type_PAYMENT",
+      "coefficient": -2.7947013529606273,
+      "coefficient_direction": "negative",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Transaction type is encoded with all five mutually exclusive indicators and no omitted reference category; interpret this coefficient through relative category contrasts, holding other features fixed."
+    },
+    {
+      "feature_name": "type_TRANSFER",
+      "coefficient": 1.4026792317643757,
+      "coefficient_direction": "positive",
+      "transformed_feature_type": "binary_indicator",
+      "interpretation_note": "Transaction type is encoded with all five mutually exclusive indicators and no omitted reference category; interpret this coefficient through relative category contrasts, holding other features fixed."
+    }
+  ],
+  "validation_equivalence_check": {
+    "metric_source": "reports/modeling/validation_results.json",
+    "average_precision_expected": 0.7290299850363265,
+    "average_precision_reproduced": 0.7290299850363265,
+    "average_precision_tolerance": 1e-06,
+    "roc_auc_expected": 0.9846065107211605,
+    "roc_auc_reproduced": 0.9846065107211605,
+    "roc_auc_tolerance": 1e-06,
+    "passed": true
+  },
+  "coefficient_interpretation": {
+    "positive": "Higher fitted model log-odds of fraud, holding other features fixed.",
+    "negative": "Lower fitted model log-odds of fraud, holding other features fixed.",
+    "scaled_continuous": "Continuous coefficients are for one-standard-deviation changes after TRAIN-fitted scaling.",
+    "binary_indicator": "Non-type binary coefficients are for changing the indicator from 0 to 1, holding other features fixed.",
+    "transaction_type_indicators": "All five mutually exclusive transaction-type indicators are included, so there is no omitted reference category; interpret transaction-type coefficients through relative category contrasts."
+  },
+  "caveats": [
+    "Coefficients describe associations within the fitted model, not causal effects.",
+    "Continuous and binary coefficient magnitudes have different units and should not be compared naively.",
+    "Correlated features, including amount and log1p_amount, complicate isolated interpretation.",
+    "Transaction-type coefficients should be interpreted through relative category contrasts because all five type indicators are retained with the intercept; regularisation and this coding affect how fitted contribution is distributed across the intercept and type indicators.",
+    "PaySim is simulated data, so explanations are portfolio evidence rather than production bank claims."
+  ],
+  "descriptive_only": true,
+  "causal_interpretation": false,
+  "post_test_tuning": false,
+  "test_predictions_generated": false,
+  "test_evaluation_rerun": false
+}

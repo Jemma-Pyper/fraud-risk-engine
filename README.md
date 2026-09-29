@@ -48,6 +48,16 @@ real-bank production performance.
 6. Select a demonstration threshold on VALIDATION only.
 7. Run the final out-of-time TEST evaluation once using the frozen policy.
 
+```mermaid
+flowchart LR
+    A[Raw PaySim CSV] --> B[Data validation]
+    B --> C[Leakage-aware features]
+    C --> D[Chronological split]
+    D --> E[TRAIN model fit]
+    E --> F[VALIDATION model and threshold selection]
+    F --> G[Frozen TEST evaluation]
+```
+
 ## Results at a glance
 
 Frozen model policy: unweighted logistic regression, `class_weight=None`,
@@ -66,6 +76,8 @@ Frozen validation-selected threshold: `0.02895689437774259`
 | Alerts | 1,565 |
 | Alert rate | 1.2664% |
 
+![Validation versus TEST performance](reports/modeling/figures/validation_vs_test_performance.png)
+
 At the frozen threshold, the final TEST confusion counts were 1,136 true
 positives, 429 false positives, 121,497 true negatives, and 518 false negatives.
 The threshold is a validation-selected demonstration policy, not an optimal,
@@ -73,6 +85,30 @@ economically optimal, profit-maximising, or production-ready bank threshold.
 
 The `isFlaggedFraud` TEST benchmark had precision `1.000000` but recall only
 `0.004837`, detecting 8 of 1,654 fraud cases.
+
+## Explainability
+
+Explainability in this project comes from a deliberately small and auditable
+modelling design:
+
+1. The feature set is transparent and limited to 11 transaction-level features.
+2. Feature availability and leakage risk are documented before modelling.
+3. Logistic-regression coefficient direction can be inspected.
+4. Threshold trade-offs are documented explicitly on VALIDATION.
+5. Final results are auditable through committed JSON artifacts.
+
+![Frozen logistic coefficients](reports/modeling/figures/logistic_coefficients.png)
+
+A positive coefficient means the fitted model assigns higher log-odds of fraud,
+holding other features fixed. A negative coefficient means lower fitted log-odds.
+Continuous-feature coefficients refer to one-standard-deviation changes after
+TRAIN-fitted scaling. Non-type binary-feature coefficients refer to changing an
+indicator from 0 to 1. Transaction type needs a separate caveat: all five
+mutually exclusive type indicators are retained with the intercept, so there is
+no omitted reference category. Type coefficients are best read through relative
+category contrasts, not as standalone baseline-relative effects. Coefficients
+are associations within the fitted model, not causal effects, and correlated
+features such as `amount` and `log1p_amount` complicate isolated interpretation.
 
 ## Why the evaluation is credible
 
@@ -158,6 +194,7 @@ Run historical workflows:
 python scripts/run_eda.py data/PS_20174392719_1491204439457_log.csv
 python scripts/run_validation_baselines.py data/PS_20174392719_1491204439457_log.csv
 python scripts/run_threshold_analysis.py data/PS_20174392719_1491204439457_log.csv
+python scripts/create_portfolio_figures.py
 ```
 
 FINAL EVALUATION ALREADY EXECUTED:
@@ -177,8 +214,10 @@ threshold, or hyperparameters.
 - `reports/modeling/threshold_analysis.json`: Phase 6A validation threshold
   analysis and frozen threshold policy.
 - `reports/modeling/test_results.json`: Phase 6B final out-of-time TEST result.
+- `reports/modeling/model_explainability.json`: descriptive coefficient
+  explainability for the frozen TRAIN-fitted logistic configuration.
 - `reports/modeling/figures/`: validation precision-recall, ROC, and threshold
-  trade-off figures.
+  trade-off figures, plus portfolio result and coefficient visuals.
 - `reports/eda/figures/`: exploratory class, type, amount, balance, and benchmark
   visuals.
 

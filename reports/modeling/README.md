@@ -70,6 +70,8 @@ Validation-to-TEST transfer:
 
 The selected validation threshold transferred reasonably: the 70% validation recall policy produced TEST recall about `68.7%` and higher TEST precision. The higher TEST Average Precision should be interpreted carefully because AP is prevalence-sensitive and the TEST period has different fraud prevalence; it should not be described as intrinsic model improvement. ROC-AUC remained similar across validation and TEST.
 
+The portfolio comparison figure `figures/validation_vs_test_performance.png` visualizes Average Precision, ROC-AUC, precision, recall, and F1 using only the committed validation, threshold-analysis, and final TEST JSON artifacts.
+
 `isFlaggedFraud` TEST benchmark:
 
 | Metric | Value |
@@ -86,3 +88,15 @@ The selected validation threshold transferred reasonably: the 70% validation rec
 | Alert rate | 0.00647% |
 
 The project distinguishes documented split-level TEST information from model evaluation. TEST was not used for preprocessing fitting, model fitting, model selection, threshold selection, or model-performance evaluation before Phase 6B. TEST results are final out-of-time evaluation evidence only and are not used to change the model, threshold, features, preprocessing, class weights, solver, resampling, or hyperparameters.
+
+## Descriptive coefficient explainability
+
+`model_explainability.json` records descriptive logistic-regression coefficient information for the frozen unweighted model configuration. Because no model binary is committed, the artifact is produced by reconstructing the exact TRAIN-fitted unweighted logistic pipeline and checking that validation Average Precision and ROC-AUC exactly reproduce `validation_results.json`.
+
+This reconstruction is for explanation only. It uses TRAIN for fitting and VALIDATION for equivalence checking; it does not build TEST features, generate TEST predictions, rerun final TEST evaluation, change model settings, select features, tune thresholds, or alter the frozen result artifacts.
+
+The coefficient figure `figures/logistic_coefficients.png` shows coefficient direction for the TRAIN-fitted logistic model. Positive coefficients indicate higher fitted model log-odds of fraud, holding other features fixed; negative coefficients indicate lower fitted log-odds. Continuous-feature coefficients correspond to one-standard-deviation changes after TRAIN-fitted scaling, while non-type binary coefficients correspond to changing an indicator from 0 to 1.
+
+Transaction type requires a separate caveat because all five mutually exclusive type indicators are retained with the intercept. There is no omitted transaction-type reference category, so type coefficients should be interpreted through relative category contrasts rather than as standalone effects relative to a baseline category. Regularisation and the chosen coding affect how fitted contribution is distributed across the intercept and the full set of type indicators.
+
+Coefficients are not causal effects, and correlated features such as `amount` and `log1p_amount` complicate isolated interpretation.
